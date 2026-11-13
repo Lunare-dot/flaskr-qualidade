@@ -54,11 +54,22 @@ flask --app flaskr run --debug
 
 Acesse http://127.0.0.1:5000.
 
-## Testes
+## Cobertura de testes
+
+Para executar os testes com cobertura:
 
 ```powershell
-python -m pytest -v
+coverage run -m pytest
+coverage report -m
 ```
+
+## Para gerar um relatório HTML:
+
+```powershell
+coverage html
+```
+
+O relatório estará disponível em: htmlcov/index.html
 
 ## Estrutura
 
