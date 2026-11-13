@@ -7,14 +7,14 @@ license = {file = "LICENSE.txt"}
 maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
 classifiers = ["Private :: Do Not Upload"]
 dependencies = [
-    "flask",
+    "flask==3.1.3",
 ]
 
 [project.urls]
 Documentation = "https://flask.palletsprojects.com/tutorial/"
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest==9.2.0"]
 
 [build-system]
 requires = ["flit_core<4"]

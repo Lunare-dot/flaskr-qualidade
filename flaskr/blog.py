@@ -5,13 +5,24 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
-from werkzeug.exceptions import abort
+from werkzeug.exceptions import Forbidden, NotFound, abort
 
 from .auth import login_required
 from .db import get_db
 
 bp = Blueprint("blog", __name__)
 
+def get_post_form_data():
+    """Read and validate post form data."""
+    title = request.form["title"]
+    body = request.form["body"]
+    
+    error = None
+    
+    if not title:
+        error = "Title is required."
+        
+    return title, body, error
 
 @bp.route("/")
 def index():
@@ -25,18 +36,10 @@ def index():
     return render_template("blog/index.html", posts=posts)
 
 
+
 def get_post(id, check_author=True):
-    """Get a post and its author by id.
+    """Get a post and check whether the user is its author."""
 
-    Checks that the id exists and optionally that the current user is
-    the author.
-
-    :param id: id of post to get
-    :param check_author: require the current user to be the author
-    :return: the post with author information
-    :raise 404: if a post with the given id doesn't exist
-    :raise 403: if the current user isn't the author
-    """
     post = (
         get_db()
         .execute(
@@ -49,12 +52,19 @@ def get_post(id, check_author=True):
     )
 
     if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
+        raise NotFound(f"Post id {id} doesn't exist.")
 
-    if check_author and post["author_id"] != g.user["id"]:
-        abort(403)
+    if check_author:
+        user = g.user
+
+        if user is None:
+            raise Forbidden()
+
+        if post["author_id"] != user["id"]:
+            raise Forbidden()
 
     return post
+
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -62,12 +72,7 @@ def get_post(id, check_author=True):
 def create():
     """Create a new post for the current user."""
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
-
-        if not title:
-            error = "Title is required."
+        title, body, error = get_post_form_data()
 
         if error is not None:
             flash(error)
@@ -90,12 +95,7 @@ def update(id):
     post = get_post(id)
 
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
-
-        if not title:
-            error = "Title is required."
+        title, body, error = get_post_form_data()
 
         if error is not None:
             flash(error)
