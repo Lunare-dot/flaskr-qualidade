@@ -5,7 +5,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
-from werkzeug.exceptions import abort
+from werkzeug.exceptions import Forbidden, NotFound, abort
 
 from .auth import login_required
 from .db import get_db
@@ -36,18 +36,10 @@ def index():
     return render_template("blog/index.html", posts=posts)
 
 
+
 def get_post(id, check_author=True):
-    """Get a post and its author by id.
+    """Get a post and check whether the user is its author."""
 
-    Checks that the id exists and optionally that the current user is
-    the author.
-
-    :param id: id of post to get
-    :param check_author: require the current user to be the author
-    :return: the post with author information
-    :raise 404: if a post with the given id doesn't exist
-    :raise 403: if the current user isn't the author
-    """
     post = (
         get_db()
         .execute(
@@ -60,18 +52,19 @@ def get_post(id, check_author=True):
     )
 
     if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
+        raise NotFound(f"Post id {id} doesn't exist.")
 
     if check_author:
         user = g.user
 
         if user is None:
-            abort(403)
+            raise Forbidden()
 
         if post["author_id"] != user["id"]:
-            abort(403)
+            raise Forbidden()
 
     return post
+
 
 
 @bp.route("/create", methods=("GET", "POST"))
