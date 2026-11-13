@@ -12,6 +12,17 @@ from .db import get_db
 
 bp = Blueprint("blog", __name__)
 
+def get_post_form_data():
+    """Read and validate post form data."""
+    title = request.form["title"]
+    body = request.form["body"]
+    
+    error = None
+    
+    if not title:
+        error = "Title is required."
+        
+    return title, body, error
 
 @bp.route("/")
 def index():
@@ -63,12 +74,7 @@ def get_post(id, check_author=True):
 def create():
     """Create a new post for the current user."""
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
-
-        if not title:
-            error = "Title is required."
+        title, body, error = get_post_form_data()
 
         if error is not None:
             flash(error)
@@ -91,12 +97,7 @@ def update(id):
     post = get_post(id)
 
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
-
-        if not title:
-            error = "Title is required."
+        title, body, error = get_post_form_data()
 
         if error is not None:
             flash(error)
