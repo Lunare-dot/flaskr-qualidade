@@ -30,8 +30,11 @@ Crie e ative um ambiente virtual:
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
 
 Instale as dependências:
+
+```powershell
 pip install -e ".[test]"
 ```
 
