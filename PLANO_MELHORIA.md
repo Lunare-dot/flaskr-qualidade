@@ -4,7 +4,7 @@ Baseline: v1.0-parte1
 
 ## Problema 1 — Dependências sem versões fixadas
 
-- Evidência: https://sonarcloud.io/project/issues?open=AaHSYVa3pEqpRtwXc5Hz&id=Lunare-dot_flaskr-qualidade
+- Evidência: https://sonarcloud.io/project/issues?open=AaHSYVa5pEqpRtwXc5H0&id=Lunare-dot_flaskr-qualidade
 - Ação: Definir versões específicas e compatíveis para as dependências apontadas no pyproject.toml e verificar a instalação e execução do projeto.
 - Indicador: Quantidade de ocorrências do alerta de dependências sem versões fixadas no SonarCloud.
 - Valor inicial: 1 ocorrência.
